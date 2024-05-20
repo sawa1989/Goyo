@@ -1,0 +1,41 @@
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update eks
+helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=literary-goyo-eks \
+  --set serviceAccount.create=true \
+  --set serviceAccount.name=aws-load-balancer-controller \
+  --set serviceAccount.annotations.'eks\.amazonaws\.com/role-arn'="arn:aws:iam::${AWS_Account_number}:role/role-ekssa-goyo-eks-aws-load-balancer-controller"
+kubectl create ns goyo-ns
+kubectl apply -f application.yaml
+---
+result1:
+kubectl get ingress -A
+NAMESPACE   NAME           CLASS    HOSTS   ADDRESS                                                PORTS   AGE
+goyo-ns     goyo-ingress   <none>   *       goyo-alb-2068434520.ap-northeast-2.elb.amazonaws.com   80      45s
+---
+result2:
+curl goyo-alb-2068434520.ap-northeast-2.elb.amazonaws.com
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
